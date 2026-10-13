@@ -17,7 +17,7 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y shellcheck
 
       - name: Lint shell scripts
-        run: shellcheck install.sh install-remote.sh package.sh
+        run: shellcheck install.sh install-remote.sh package.sh tests/smoke_test.sh
 
   build:
     name: Build .plasmoid
@@ -34,3 +34,26 @@ jobs:
 
       - name: Verify package exists
         run: ls -lh *.plasmoid
+
+  test:
+    name: Tests
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Run unit tests
+        run: node tests/runner.js
+
+      - name: Install Plasma SDK & Xvfb
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y plasma-sdk xvfb
+
+      - name: Run plasmoidviewer smoke test
+        run: bash tests/smoke_test.sh
