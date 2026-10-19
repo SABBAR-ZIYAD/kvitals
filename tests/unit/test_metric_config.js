@@ -1,6 +1,6 @@
-const test = require("node:test");
-const assert = require("node:assert/strict");
-const { loadQmlLibrary } = require("../helpers.js");
+import test from "node:test";
+import assert from "node:assert/strict";
+import { loadQmlLibrary } from "../helpers.js";
 
 const MetricDefs = loadQmlLibrary("contents/ui/models/MetricDefinitions.js");
 
@@ -22,8 +22,6 @@ function parseJsonSafe(str) {
 }
 
 function createConfigModel(target = {}) {
-    const propertyPrefix = "";
-
     function parsePinnedList() {
         const raw = target.pinnedMetrics || "cpu/usage,ram/percentage,temp/system,bat/percentage,net/down,net/up";
         return raw.split(",").map(s => s.trim()).filter(s => s.length > 0);
@@ -92,24 +90,20 @@ function createConfigModel(target = {}) {
     };
 }
 
-// JSON and legacy label parsing
 test("parseJsonSafe handles modern JSON and legacy pipe formats", () => {
     assert.deepEqual(parseJsonSafe(null), {});
     assert.deepEqual(parseJsonSafe(""), {});
     assert.deepEqual(parseJsonSafe({ gpu0: "Discrete" }), { gpu0: "Discrete" });
 
-    // JSON format
     const jsonStr = JSON.stringify({ gpu0: "NVIDIA RTX", gpu1: "Intel UHD" });
     assert.deepEqual(parseJsonSafe(jsonStr), { gpu0: "NVIDIA RTX", gpu1: "Intel UHD" });
 
-    // Legacy pipe format
     assert.deepEqual(parseJsonSafe("gpu0:NVIDIA RTX | gpu1:Intel UHD"), {
         gpu0: "NVIDIA RTX",
         gpu1: "Intel UHD"
     });
 });
 
-// Pinned metrics list manipulation
 test("MetricConfig pinnedList supports toggling, ordering, and defaults", () => {
     const config = createConfigModel();
     const defaults = config.parsePinnedList();
@@ -117,21 +111,17 @@ test("MetricConfig pinnedList supports toggling, ordering, and defaults", () => 
     assert.equal(config.isPinned("cpu/usage"), true);
     assert.equal(config.isPinned("unknown/metric"), false);
 
-    // Toggle out
     config.togglePin("cpu/usage");
     assert.equal(config.isPinned("cpu/usage"), false);
 
-    // Toggle in
     config.togglePin("cpu/usage");
     assert.equal(config.isPinned("cpu/usage"), true);
 
-    // Reorder
     config.target.pinnedMetrics = "a,b,c";
     config.movePinnedMetric(0, 2);
     assert.equal(config.target.pinnedMetrics, "b,c,a");
 });
 
-// GPU selection state
 test("MetricConfig gpuSelection handles default, none, and specific GPUs", () => {
     const config = createConfigModel();
     assert.equal(config.isGpuSelected("gpu0"), true);
@@ -145,7 +135,6 @@ test("MetricConfig gpuSelection handles default, none, and specific GPUs", () =>
     assert.equal(config.isGpuSelected("gpu1"), false);
 });
 
-// Metric category order with missing key fill
 test("MetricConfig orderedKeys includes all groups even if omitted in config", () => {
     const config = createConfigModel({ metricOrder: "gpu,cpu" });
     const keys = config.getOrderedKeys();

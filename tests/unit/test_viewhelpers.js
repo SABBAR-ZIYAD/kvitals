@@ -1,10 +1,9 @@
-const test = require("node:test");
-const assert = require("node:assert/strict");
-const { loadQmlLibrary } = require("../helpers.js");
+import test from "node:test";
+import assert from "node:assert/strict";
+import { loadQmlLibrary } from "../helpers.js";
 
 const ViewHelpers = loadQmlLibrary("contents/ui/models/ViewHelpers.js");
 
-// buildCompactItems edge cases
 test("buildCompactItems handles empty and invalid inputs", () => {
     assert.equal(ViewHelpers.buildCompactItems(null, ["cpu/usage"]).length, 0);
     assert.equal(ViewHelpers.buildCompactItems([], ["cpu/usage"]).length, 0);
@@ -13,7 +12,6 @@ test("buildCompactItems handles empty and invalid inputs", () => {
     assert.equal(ViewHelpers.buildCompactItems([{ id: "cpu/usage", status: "loading" }], ["cpu/usage"]).length, 0);
 });
 
-// buildCompactItems mixed groups
 test("buildCompactItems groups same family metrics when mergeSameFamily is true", () => {
     const metrics = [
         {
@@ -67,7 +65,6 @@ test("buildCompactItems groups same family metrics when mergeSameFamily is true"
     assert.equal(unmerged[1].segments, null);
 });
 
-// buildPopupGroups
 test("buildPopupGroups filters unavailable metrics and aggregates categories", () => {
     assert.equal(ViewHelpers.buildPopupGroups([], []).length, 0);
     assert.equal(ViewHelpers.buildPopupGroups(null, []).length, 0);
@@ -124,7 +121,6 @@ test("buildPopupGroups filters unavailable metrics and aggregates categories", (
     assert.equal(proc.aggregateValue, "30%");
 });
 
-// syncCompactValues
 test("syncCompactValues detects structural differences and syncs in-place", () => {
     assert.equal(ViewHelpers.syncCompactValues(null, []), false);
     assert.equal(ViewHelpers.syncCompactValues([], null), false);
@@ -154,7 +150,6 @@ test("syncCompactValues detects structural differences and syncs in-place", () =
     assert.equal(targetList[0].value, "20%");
     assert.equal(targetList[0].color, "#ff0000");
 
-    // Hide separator mismatch
     const mismatchSep = { ...incomingA, hideSeparator: true };
     assert.equal(ViewHelpers.syncCompactValues(targetList, [mismatchSep]), false);
 });

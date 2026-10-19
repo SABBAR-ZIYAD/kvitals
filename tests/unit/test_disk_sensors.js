@@ -1,5 +1,5 @@
-const test = require("node:test");
-const assert = require("node:assert/strict");
+import test from "node:test";
+import assert from "node:assert/strict";
 
 function parseSysfsOutput(rawOutput, availableSensors) {
     if (!rawOutput) return {};
@@ -75,7 +75,6 @@ function createDiskSensorResolver(sysfsOutput, tempSensorIds, directSensors = {}
     return { _findTempSensorForDisk, sysfsMap };
 }
 
-// Disk temperature resolution
 test("Disk temperature resolves correctly across NVMe and SATA", () => {
     const sysfs = `
 nvme0n1:nvme:/sys/devices/pci0000:00/0000:00:1d.0/0000:01:00.0/nvme/nvme0
@@ -89,7 +88,6 @@ sda:drivetemp:/sys/devices/pci0000:00/0000:00:17.0/ata1/host0/target0:0:0/0:0:0:
     assert.equal(_findTempSensorForDisk("sdb"), "");
 });
 
-// Direct sensor priority
 test("Direct sensor takes priority over sysfs mapping", () => {
     const sysfs = "sda:drivetemp:/sys/devices/pci0000:00/0000:00:17.0/ata1/host0/target0:0:0/0:0:0:0";
     const sensors = ["lmsensors/drivetemp-scsi-0-0/temp1"];

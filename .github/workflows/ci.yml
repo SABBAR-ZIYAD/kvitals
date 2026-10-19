@@ -53,7 +53,7 @@ jobs:
       - name: Install Plasma SDK & Xvfb
         run: |
           sudo apt-get update
-          sudo apt-get install -y plasma-sdk xvfb
+          sudo apt-get install -y plasma-sdk xvfb dbus
 
       - name: Run plasmoidviewer smoke test
         run: bash tests/smoke_test.sh

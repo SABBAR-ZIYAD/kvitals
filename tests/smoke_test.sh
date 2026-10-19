@@ -6,10 +6,14 @@ WIDGET_PATH="$(cd "$SCRIPT_DIR/.." && pwd)"
 TIMEOUT=10
 LOG=$(mktemp)
 XVFB_PID=""
+DBUS_PID=""
 
 cleanup() {
     if [ -n "$XVFB_PID" ]; then
         kill "$XVFB_PID" 2>/dev/null || true
+    fi
+    if [ -n "$DBUS_PID" ]; then
+        kill "$DBUS_PID" 2>/dev/null || true
     fi
     rm -f "$LOG"
 }
@@ -28,6 +32,19 @@ if [ -z "${DISPLAY:-}" ]; then
     else
         echo "Error: DISPLAY is not set and neither Xvfb nor xvfb-run is available." >&2
         exit 1
+    fi
+fi
+
+# DBus session setup
+if [ -z "${DBUS_SESSION_BUS_ADDRESS:-}" ]; then
+    if command -v dbus-daemon >/dev/null 2>&1; then
+        eval "$(dbus-daemon --session --fork --print-address=1 --print-pid=1 \
+            | awk 'NR==1{addr=$0} NR==2{pid=$0} END{print "export DBUS_SESSION_BUS_ADDRESS=" addr; print "DBUS_PID=" pid}')"
+    elif command -v dbus-launch >/dev/null 2>&1; then
+        eval "$(dbus-launch --sh-syntax)"
+        DBUS_PID=$DBUS_SESSION_BUS_PID
+    else
+        echo "Warning: dbus not found; plasmoidviewer may fail" >&2
     fi
 fi
 

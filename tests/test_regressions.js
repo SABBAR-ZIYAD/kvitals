@@ -1,12 +1,15 @@
-const test = require("node:test");
-const assert = require("node:assert/strict");
-const fs = require("node:fs");
-const path = require("node:path");
-const vm = require("node:vm");
+import test from "node:test";
+import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+import { resolve, dirname } from "node:path";
+import { createContext, runInContext } from "node:vm";
+import { fileURLToPath } from "node:url";
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 function loadQmlLibrary(relPath) {
-    const fullPath = path.resolve(__dirname, "..", relPath);
-    let code = fs.readFileSync(fullPath, "utf8");
+    const fullPath = resolve(__dirname, "..", relPath);
+    let code = readFileSync(fullPath, "utf8");
     code = code.replace(/^\s*\.pragma\s+library\s*/m, "");
     const sandbox = {
         i18n: (s, ...args) => {
@@ -17,8 +20,8 @@ function loadQmlLibrary(relPath) {
             return res;
         }
     };
-    vm.createContext(sandbox);
-    vm.runInContext(code, sandbox);
+    createContext(sandbox);
+    runInContext(code, sandbox);
     return sandbox;
 }
 
@@ -209,7 +212,7 @@ test("Disk group icon + read/write segment icons with compact temp UX", () => {
 
 // 3. RAM temperature discovery and palette visibility
 test("RAM temperature discovery and palette visibility", () => {
-    const panelOrderQml = fs.readFileSync(path.resolve(__dirname, "../contents/ui/configPanelOrder.qml"), "utf8");
+    const panelOrderQml = readFileSync(resolve(__dirname, "../contents/ui/configPanelOrder.qml"), "utf8");
     assert.ok(panelOrderQml.includes('id: "ram/temp"'), "configPanelOrder.qml must include ram/temp in palette");
     assert.ok(panelOrderQml.includes('RAM Temperature'), "configPanelOrder.qml must label ram/temp");
 

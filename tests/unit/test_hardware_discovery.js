@@ -1,6 +1,6 @@
-const test = require("node:test");
-const assert = require("node:assert/strict");
-const { loadQmlLibrary } = require("../helpers.js");
+import test from "node:test";
+import assert from "node:assert/strict";
+import { loadQmlLibrary } from "../helpers.js";
 
 const MetricDefs = loadQmlLibrary("contents/ui/models/MetricDefinitions.js");
 
@@ -104,7 +104,6 @@ function createHardwareInventory(rawSensors) {
     };
 }
 
-// Hardware inventory extraction
 test("Hardware inventory extracts GPUs, disks, cores, fans, and network interfaces", () => {
     const raw = [
         "cpu/all/usage",
@@ -126,7 +125,6 @@ test("Hardware inventory extracts GPUs, disks, cores, fans, and network interfac
 
     const inv = createHardwareInventory(raw);
 
-    // CPU Cores sorted numerically
     assert.equal(inv.discoveredCores.length, 3);
     assert.equal(inv.discoveredCores[0].id, "cpu0");
     assert.equal(inv.discoveredCores[0].name, "Core 1");
@@ -135,28 +133,22 @@ test("Hardware inventory extracts GPUs, disks, cores, fans, and network interfac
     assert.equal(inv.discoveredCores[2].id, "cpu10");
     assert.equal(inv.discoveredCores[2].name, "Core 11");
 
-    // GPUs sorted
     assert.equal(inv.discoveredGpus.length, 2);
     assert.equal(inv.discoveredGpus[0].id, "gpu0");
     assert.equal(inv.discoveredGpus[1].id, "gpu1");
 
-    // Network interfaces filtering lo and all
     assert.deepEqual(inv.discoveredNetworkIfaces, ["auto", "wlan0"]);
 
-    // Disks ignoring disk/all
     assert.equal(inv.discoveredDisks.length, 2);
     assert.equal(inv.discoveredDisks[0].id, "nvme0n1");
     assert.equal(inv.discoveredDisks[1].id, "sda");
 
-    // Battery and fans
     assert.deepEqual(inv.discoveredBatteries, ["BAT0"]);
     assert.equal(inv.discoveredFans.length, 1);
 
-    // Sensor presence
     assert.equal(inv.sensorExists("cpu/all/usage"), true);
     assert.equal(inv.sensorExists("nonexistent"), false);
 
-    // Query caching
     const q1 = inv.queryIds(/^cpu\/cpu\d+\/usage$/);
     const q2 = inv.queryIds(/^cpu\/cpu\d+\/usage$/);
     assert.equal(q1, q2);

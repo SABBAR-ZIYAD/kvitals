@@ -1,10 +1,9 @@
-const test = require("node:test");
-const assert = require("node:assert/strict");
-const { loadQmlLibrary } = require("../helpers.js");
+import test from "node:test";
+import assert from "node:assert/strict";
+import { loadQmlLibrary } from "../helpers.js";
 
 const ViewHelpers = loadQmlLibrary("contents/ui/models/ViewHelpers.js");
 
-// CompactView contract
 test("buildCompactItems produces exact data structure consumed by CompactView.qml", () => {
     const rawMetrics = [
         {
@@ -50,7 +49,6 @@ test("buildCompactItems produces exact data structure consumed by CompactView.qm
 
     assert.equal(compactItems.length, 2);
 
-    // Single item contract (CPU)
     const cpuItem = compactItems[0];
     assert.equal(typeof cpuItem.key, "string");
     assert.equal(typeof cpuItem.label, "string");
@@ -59,7 +57,6 @@ test("buildCompactItems produces exact data structure consumed by CompactView.qm
     assert.equal(typeof cpuItem.color, "string");
     assert.equal(cpuItem.segments, null);
 
-    // Merged segments contract (Network)
     const netItem = compactItems[1];
     assert.equal(typeof netItem.key, "string");
     assert.equal(typeof netItem.label, "string");
@@ -77,7 +74,6 @@ test("buildCompactItems produces exact data structure consumed by CompactView.qm
     }
 });
 
-// FullView contract
 test("buildPopupGroups produces exact data structure consumed by FullView.qml", () => {
     const rawMetrics = [
         {
@@ -110,7 +106,6 @@ test("buildPopupGroups produces exact data structure consumed by FullView.qml", 
     assert.ok(groups.length > 0);
 
     for (const group of groups) {
-        // Group properties
         assert.equal(typeof group.key, "string");
         assert.equal(typeof group.groupLabel, "string");
         assert.equal(typeof group.icon, "string");

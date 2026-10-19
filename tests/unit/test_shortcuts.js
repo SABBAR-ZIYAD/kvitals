@@ -1,7 +1,6 @@
-const test = require("node:test");
-const assert = require("node:assert/strict");
+import test from "node:test";
+import assert from "node:assert/strict";
 
-// Global shortcut initialization and persistence
 test("Global shortcut initializes default and persists edits", () => {
     const plasmoid = {
         configuration: {
@@ -27,14 +26,12 @@ test("Global shortcut initializes default and persists edits", () => {
     assert.equal(plasmoid.globalShortcut, "Meta+Shift+V");
     assert.equal(plasmoid.configuration.shortcutInitialized, true);
 
-    // Explicit clear
     plasmoid.globalShortcut = "";
     plasmoid.configuration.configuredShortcut = "none";
     simulateInit(plasmoid);
     assert.equal(plasmoid.globalShortcut, "");
 });
 
-// Shortcut toggle behavior
 test("Shortcut trigger toggles popup visibility state", () => {
     const popup = { visible: false };
 

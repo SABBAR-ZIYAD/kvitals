@@ -1,6 +1,6 @@
-const test = require("node:test");
-const assert = require("node:assert/strict");
-const { loadQmlLibrary } = require("../helpers.js");
+import test from "node:test";
+import assert from "node:assert/strict";
+import { loadQmlLibrary } from "../helpers.js";
 
 const MetricDefs = loadQmlLibrary("contents/ui/models/MetricDefinitions.js");
 
@@ -75,7 +75,6 @@ function createMetricFactory(config, baseTextColor = "#ffffff") {
     return { createMetric, resolveMetricColor };
 }
 
-// Normalization utilities
 test("normalizeValue and normalizeString handle invalid inputs safely", () => {
     assert.ok(isNaN(normalizeValue(NaN)));
     assert.ok(isNaN(normalizeValue(Infinity)));
@@ -89,7 +88,6 @@ test("normalizeValue and normalizeString handle invalid inputs safely", () => {
     assert.equal(normalizeString(undefined, "default"), "default");
 });
 
-// Metric creation and threshold coloring
 test("createMetric sets color based on normal and inverted thresholds", () => {
     const config = {
         enableThresholdColors: true,
@@ -102,7 +100,6 @@ test("createMetric sets color based on normal and inverted thresholds", () => {
 
     const factory = createMetricFactory(config, "#normal");
 
-    // Normal threshold (CPU)
     const mNormal = factory.createMetric("cpu.usage", { value: 50, displayValue: "50%" });
     assert.equal(mNormal.color, "#normal");
     assert.equal(mNormal.isPinned, true);
@@ -113,7 +110,6 @@ test("createMetric sets color based on normal and inverted thresholds", () => {
     const mCrit = factory.createMetric("cpu.usage", { value: 95, displayValue: "95%" });
     assert.equal(mCrit.color, "#critical");
 
-    // Inverted threshold (Battery)
     const bOk = factory.createMetric("bat.percentage", { value: 80, displayValue: "80%" });
     assert.equal(bOk.color, "#normal");
 
@@ -124,7 +120,6 @@ test("createMetric sets color based on normal and inverted thresholds", () => {
     assert.equal(bCrit.color, "#critical");
 });
 
-// Metric creation fallback when thresholds disabled
 test("createMetric uses baseTextColor when threshold coloring disabled", () => {
     const config = { enableThresholdColors: false };
     const factory = createMetricFactory(config, "#base");

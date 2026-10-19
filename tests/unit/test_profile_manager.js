@@ -1,5 +1,5 @@
-const test = require("node:test");
-const assert = require("node:assert/strict");
+import test from "node:test";
+import assert from "node:assert/strict";
 
 function validateProfiles(profiles) {
     if (!Array.isArray(profiles) || profiles.length === 0) return false;
@@ -51,7 +51,6 @@ function simulateLoadFromRaw(raw, activeId, config) {
     };
 }
 
-// Profile corruption recovery
 test("ProfileManager recovers gracefully from corrupted JSON", () => {
     const config = { corruptedProfileListBackup: "" };
     const res = simulateLoadFromRaw("invalid{json", "some-id", config);
@@ -62,7 +61,6 @@ test("ProfileManager recovers gracefully from corrupted JSON", () => {
     assert.equal(config.corruptedProfileListBackup, "invalid{json");
 });
 
-// Default profile deletion rules
 test("Default profile cannot be deleted but duplicate-named custom profile can", () => {
     const profiles = [
         { id: "p1", name: "Default", isDefault: true, data: {} },
